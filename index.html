@@ -591,14 +591,14 @@ tbody tr:hover { background:var(--bg3); }
     </section>
 
     <!-- ══ PAGE: PLACEHOLDER PAGES ══ -->
-    <section id="page-reports" class="page-section placeholder-page" style="display:none">
-      <div class="placeholder-icon">📄</div><div class="placeholder-title">Reports</div><div class="placeholder-sub">Generate and download financial reports</div>
+    <section id="page-reports" class="page-section" style="display:none">
+      <div class="sec-hdr"><div class="sec-hdr-title">Reports <span>· Financial Reports</span></div></div>
     </section>
-    <section id="page-collections" class="page-section placeholder-page" style="display:none">
-      <div class="placeholder-icon">💰</div><div class="placeholder-title">Collections</div><div class="placeholder-sub">Track and manage collection activities</div>
+    <section id="page-collections" class="page-section" style="display:none">
+      <div class="sec-hdr"><div class="sec-hdr-title">Collections <span>· Collection Activities</span></div></div>
     </section>
-    <section id="page-disputes" class="page-section placeholder-page" style="display:none">
-      <div class="placeholder-icon">⚖️</div><div class="placeholder-title">Disputes</div><div class="placeholder-sub">Manage and resolve client disputes</div>
+    <section id="page-disputes" class="page-section" style="display:none">
+      <div class="sec-hdr"><div class="sec-hdr-title">Disputes <span>· Client Dispute Management</span></div></div>
     </section>
     <section id="page-alerts" class="page-section placeholder-page" style="display:none">
       <div class="placeholder-icon">🔔</div><div class="placeholder-title">Alerts</div><div class="placeholder-sub">Configure and review system alerts</div>
@@ -615,235 +615,471 @@ tbody tr:hover { background:var(--bg3); }
 </button>
 
 <script>
-const SHEET_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vSn08w7Ya_5kf87R4wGlXAQBSEan7BFOMWzhDg3Q6DTWW-zYSMoZrSw2Ih_8-9R_A9fhC_0OUTj5J9n/pub?output=csv';
-const FB={
-  debtors:[
-    {name:'PARADIP PORT AUTHORITY',amt:8164332},
-    {name:'IOCL - AHMEDNAGAR',amt:5709636.14},
-    {name:'IOCL - PANIPAT REFINERY',amt:5708423.85},
-    {name:'IOCL - HISSAR',amt:3200670.42},
-    {name:'IOCL PARADEEP HM',amt:2722854.99},
-    {name:'IOCL - CHENNAI',amt:2509210.70},
-    {name:'IOCL - JHARSUGUDA',amt:2492968.36},
-    {name:'TRANSRAIL LIGHTING LTD',amt:1683475},
-    {name:'IOCL - MUMBAI DO (VTPL)',amt:1428483.32},
-    {name:'GAIL - VIJAIPUR',amt:1308904.38},
-    {name:'IOCL - BARAUNI',amt:1272840.32},
-    {name:'IOCL - ALLAHABAD',amt:1164634.67},
-    {name:'IOCL - MATHURA BDFP',amt:1143938.95},
-    {name:'NUCLEAR FUEL COMPLEX - KOTA',amt:1073156.58},
-    {name:'IOCL - KHUNTI',amt:997016.99},
-    {name:'NUCLEAR FUEL COMPLEX - HYD',amt:949417.48},
-    {name:'IOCL - KANPUR',amt:921902.65},
-    {name:'IOCL - SALEM',amt:821473.21},
-    {name:'NTPC - DADRI',amt:780958.78},
-    {name:'IOCL - TRICHY',amt:776915.86},
-  ],
+const BASE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSn08w7Ya_5kf87R4wGlXAQBSEan7BFOMWzhDg3Q6DTWW-zYSMoZrSw2Ih_8-9R_A9fhC_0OUTj5J9n/pub?output=csv';
+
+// All sheet tabs to fetch
+const SHEETS = {
+  gid0:          { gid: '0',          label: 'Sheet1'       },
+  gid146:        { gid: '146140284',  label: 'Debtors'      },
+  gid1840:       { gid: '1840753018', label: 'SD View'      },
+  gid864:        { gid: '864658589',  label: 'LD View'      },
+  gid106:        { gid: '106081431',  label: 'Ageing'       },
+  gid930:        { gid: '930331700',  label: 'Collections'  },
+  gid965:        { gid: '965100169',  label: 'KPI'          },
+  gid647:        { gid: '647648146',  label: 'Reports'      },
+  gid560:        { gid: '560807741',  label: 'Disputes'     },
+};
+
+// Parsed data store — keyed by gid key
+const LIVE = {};
+
+// Fallback debtor data
+const FB_DEBTORS = [
+  {name:'PARADIP PORT AUTHORITY',amt:8164332},
+  {name:'IOCL - AHMEDNAGAR',amt:5709636.14},
+  {name:'IOCL - PANIPAT REFINERY',amt:5708423.85},
+  {name:'IOCL - HISSAR',amt:3200670.42},
+  {name:'IOCL PARADEEP HM',amt:2722854.99},
+  {name:'IOCL - CHENNAI',amt:2509210.70},
+  {name:'IOCL - JHARSUGUDA',amt:2492968.36},
+  {name:'TRANSRAIL LIGHTING LTD',amt:1683475},
+  {name:'IOCL - MUMBAI DO (VTPL)',amt:1428483.32},
+  {name:'GAIL - VIJAIPUR',amt:1308904.38},
+  {name:'IOCL - BARAUNI',amt:1272840.32},
+  {name:'IOCL - ALLAHABAD',amt:1164634.67},
+  {name:'IOCL - MATHURA BDFP',amt:1143938.95},
+  {name:'NUCLEAR FUEL COMPLEX - KOTA',amt:1073156.58},
+  {name:'IOCL - KHUNTI',amt:997016.99},
+  {name:'NUCLEAR FUEL COMPLEX - HYD',amt:949417.48},
+  {name:'IOCL - KANPUR',amt:921902.65},
+  {name:'IOCL - SALEM',amt:821473.21},
+  {name:'NTPC - DADRI',amt:780958.78},
+  {name:'IOCL - TRICHY',amt:776915.86},
+];
+const FB = {
+  debtors: FB_DEBTORS,
   totalDebtors:52622340.81, totalSD:10406152.51,
   totalLD:15857083.46, totalWithheld:7252267.84, totalOther:1259114.64,
   ageing:{d0_30:1320354.79,d30_45:0,d45_60:15127185.19,d60plus:2692788.22,total:19140328.20}
 };
 
-let D=null;
+let D = null;
 
-// ── FORMAT ──────────────────────────────────────────────────────────────
-const f=n=>{n=parseFloat(n)||0;if(n>=10000000)return'₹'+(n/10000000).toFixed(2)+' Cr';if(n>=100000)return'₹'+(n/100000).toFixed(2)+' L';return'₹'+n.toLocaleString('en-IN',{maximumFractionDigits:0});};
+// ── FORMAT ─────────────────────────────────────────────────────────────
+const f = n => {
+  n = parseFloat(n) || 0;
+  return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+};
+const fNum = n => (parseFloat(n)||0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+
+// ── CSV PARSER ──────────────────────────────────────────────────────────
+function parseCSV(text) {
+  // Handle quoted fields with commas inside
+  const lines = [];
+  let cur = '', inQ = false;
+  const cells = row => {
+    const out = []; let cell = '', q = false;
+    for (let i = 0; i < row.length; i++) {
+      const c = row[i];
+      if (c === '"') { q = !q; continue; }
+      if (c === ',' && !q) { out.push(cell.trim()); cell = ''; continue; }
+      cell += c;
+    }
+    out.push(cell.trim());
+    return out;
+  };
+  const rawLines = text.trim().split('\n');
+  if (rawLines.length < 1) return { headers: [], rows: [] };
+  const headers = cells(rawLines[0]).map(h => h.replace(/^"|"$/g,'').trim());
+  const rows = rawLines.slice(1).map(l => {
+    const v = cells(l);
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (v[i]||'').replace(/^"|"$/g,'').trim());
+    return obj;
+  }).filter(r => Object.values(r).some(v => v !== ''));
+  return { headers, rows };
+}
+
+async function fetchSheet(gid) {
+  const url = BASE + '&gid=' + gid + '&t=' + Date.now();
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error('HTTP ' + resp.status + ' for gid=' + gid);
+  const text = await resp.text();
+  const { headers, rows } = parseCSV(text);
+  console.log('GID', gid, '| Headers:', headers.slice(0,6), '| Rows:', rows.length);
+  return { headers, rows, gid };
+}
+
+// Find best column by regex pattern
+function findCol(headers, patterns) {
+  for (const pat of patterns) {
+    const h = headers.find(h => pat.test(h));
+    if (h) return h;
+  }
+  return headers[0];
+}
 
 // ── MODAL ───────────────────────────────────────────────────────────────
-const openModal=id=>document.getElementById(id).classList.add('open');
-const closeModal=id=>document.getElementById(id).classList.remove('open');
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal('metric-modal');closeModal('debtor-modal');}});
+const openModal  = id => document.getElementById(id).classList.add('open');
+const closeModal = id => document.getElementById(id).classList.remove('open');
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal('metric-modal'); closeModal('debtor-modal'); }
+});
 
-function openMetricModal(key){
-  if(!D)return;
-  const tot=D.totalDebtors+D.totalSD+D.totalLD+D.totalWithheld+D.totalOther;
-  const cfg={
-    debtors:{title:'Total Debtors',color:'#0d9488',rows:[['Amount',D.totalDebtors],['% of All Heads',(D.totalDebtors/tot*100).toFixed(1)+'%'],['# Clients',D.debtors.length]]},
-    sd:{title:'Security Deposit',color:'#2563eb',rows:[['Amount',D.totalSD],['% of All Heads',(D.totalSD/tot*100).toFixed(1)+'%']]},
-    ld:{title:'Liquidated Damages',color:'#dc2626',rows:[['Amount',D.totalLD],['% of All Heads',(D.totalLD/tot*100).toFixed(1)+'%']]},
-    wh:{title:'Withheld',color:'#d97706',rows:[['Amount',D.totalWithheld],['% of All Heads',(D.totalWithheld/tot*100).toFixed(1)+'%']]},
-    od:{title:'Other Deductions',color:'#7c3aed',rows:[['Amount',D.totalOther],['% of All Heads',(D.totalOther/tot*100).toFixed(1)+'%']]},
+function openMetricModal(key) {
+  if (!D) return;
+  const tot = D.totalDebtors + D.totalSD + D.totalLD + D.totalWithheld + D.totalOther;
+  const cfg = {
+    debtors:{ title:'Total Debtors',       color:'#0d9488', rows:[['Amount',D.totalDebtors],['% of All Heads',(D.totalDebtors/tot*100).toFixed(1)+'%'],['# Clients',D.debtors.length]] },
+    sd:     { title:'Security Deposit',    color:'#2563eb', rows:[['Amount',D.totalSD],     ['% of All Heads',(D.totalSD/tot*100).toFixed(1)+'%']] },
+    ld:     { title:'Liquidated Damages',  color:'#dc2626', rows:[['Amount',D.totalLD],     ['% of All Heads',(D.totalLD/tot*100).toFixed(1)+'%']] },
+    wh:     { title:'Withheld',            color:'#d97706', rows:[['Amount',D.totalWithheld],['% of All Heads',(D.totalWithheld/tot*100).toFixed(1)+'%']] },
+    od:     { title:'Other Deductions',    color:'#7c3aed', rows:[['Amount',D.totalOther],  ['% of All Heads',(D.totalOther/tot*100).toFixed(1)+'%']] },
   }[key];
-  document.getElementById('mm-title').textContent=cfg.title;
-  document.getElementById('mm-body').innerHTML=cfg.rows.map(([l,v])=>`<div class="modal-row"><span class="modal-row-label">${l}</span><span class="modal-row-val" style="color:${cfg.color}">${typeof v==='number'?f(v):v}</span></div>`).join('');
+  if (!cfg) return;
+  document.getElementById('mm-title').textContent = cfg.title;
+  document.getElementById('mm-body').innerHTML = cfg.rows.map(([l,v]) =>
+    `<div class="modal-row"><span class="modal-row-label">${l}</span><span class="modal-row-val" style="color:${cfg.color}">${typeof v==='number'?f(v):v}</span></div>`
+  ).join('');
   openModal('metric-modal');
 }
 
-function openDebtorModal(i){
-  if(!D)return;
-  const r=D.debtors[i],pct=(r.amt/D.totalDebtors*100).toFixed(1);
-  const [rl,rc]=r.amt>5000000?['High','#dc2626']:r.amt>2000000?['Medium','#d97706']:r.amt>500000?['Low','#2563eb']:['Minimal','#16a34a'];
-  document.getElementById('dm-title').textContent=`#${i+1} · ${r.name}`;
-  document.getElementById('dm-body').innerHTML=[
-    ['Outstanding',f(r.amt),'#0d9488'],
-    ['Share of Debtors',pct+'%','#2563eb'],
-    ['Risk Level',rl,rc],
-    ['Rank',`#${i+1} of ${D.debtors.length}`,'#4a5568']
-  ].map(([l,v,c])=>`<div class="modal-row"><span class="modal-row-label">${l}</span><span class="modal-row-val" style="color:${c}">${v}</span></div>`).join('');
+function openDebtorModal(i) {
+  if (!D) return;
+  const r = D.debtors[i], pct = (r.amt/D.totalDebtors*100).toFixed(1);
+  const [rl,rc] = r.amt>5000000?['High','#dc2626']:r.amt>2000000?['Medium','#d97706']:r.amt>500000?['Low','#2563eb']:['Minimal','#16a34a'];
+  document.getElementById('dm-title').textContent = `#${i+1} · ${r.name}`;
+  document.getElementById('dm-body').innerHTML = [
+    ['Outstanding', f(r.amt), '#0d9488'],
+    ['Share of Debtors', pct+'%', '#2563eb'],
+    ['Risk Level', rl, rc],
+    ['Rank', `#${i+1} of ${D.debtors.length}`, '#4a5568']
+  ].map(([l,v,c]) => `<div class="modal-row"><span class="modal-row-label">${l}</span><span class="modal-row-val" style="color:${c}">${v}</span></div>`).join('');
   openModal('debtor-modal');
 }
 
-function openSummaryModal(){
-  if(!D)return;
-  const tot=D.totalDebtors+D.totalSD+D.totalLD+D.totalWithheld+D.totalOther;
-  document.getElementById('mm-title').textContent='Full Financial Summary';
-  document.getElementById('mm-body').innerHTML=[
-    ['Total Debtors',f(D.totalDebtors),'#0d9488'],
-    ['Security Deposit',f(D.totalSD),'#2563eb'],
-    ['LD Amount',f(D.totalLD),'#dc2626'],
-    ['Withheld',f(D.totalWithheld),'#d97706'],
-    ['Other Deductions',f(D.totalOther),'#7c3aed'],
-    ['Total Exposure',f(tot),'#0f2942'],
-  ].map(([l,v,c],i)=>`<div class="modal-row" ${i===5?'style="background:var(--bg4);border:1.5px solid var(--border2)"':''}><span class="modal-row-label" ${i===5?'style="font-weight:700;color:var(--text)"':''}>${l}</span><span class="modal-row-val" style="color:${c};${i===5?'font-size:15px':''}">${v}</span></div>`).join('');
+function openSummaryModal() {
+  if (!D) return;
+  const tot = D.totalDebtors+D.totalSD+D.totalLD+D.totalWithheld+D.totalOther;
+  document.getElementById('mm-title').textContent = 'Full Financial Summary';
+  document.getElementById('mm-body').innerHTML = [
+    ['Total Debtors',    f(D.totalDebtors), '#0d9488'],
+    ['Security Deposit', f(D.totalSD),      '#2563eb'],
+    ['LD Amount',        f(D.totalLD),      '#dc2626'],
+    ['Withheld',         f(D.totalWithheld),'#d97706'],
+    ['Other Deductions', f(D.totalOther),   '#7c3aed'],
+    ['Total Exposure',   f(tot),            '#0f2942'],
+  ].map(([l,v,c],i) => `<div class="modal-row" ${i===5?'style="background:var(--bg4);border:1.5px solid var(--border2)"':''}>
+    <span class="modal-row-label" ${i===5?'style="font-weight:700;color:var(--text)"':''}}>${l}</span>
+    <span class="modal-row-val" style="color:${c};${i===5?'font-size:15px':''}">${v}</span></div>`
+  ).join('');
   openModal('metric-modal');
 }
 
 // ── NAVIGATION ──────────────────────────────────────────────────────────
 const PAGE_META = {
-  dashboard:   {title:'Dashboard',        sub:'Overview of Receivables & Collections'},
-  debtors:     {title:'Debtor View',      sub:'All outstanding client debts'},
-  sd:          {title:'SD View',          sub:'Security Deposits · 31–60 Days'},
-  ld:          {title:'LD View',          sub:'Liquidated Damages · 61–90 Days'},
-  ageing:      {title:'Ageing Analysis',  sub:'Stuck debtors by age bucket'},
-  kpi:         {title:'KPI View',         sub:'Key Performance Indicators'},
-  reports:     {title:'Reports',          sub:'Financial reports & exports'},
-  collections: {title:'Collections',      sub:'Collection activities & tracking'},
-  disputes:    {title:'Disputes',         sub:'Client dispute management'},
-  alerts:      {title:'Alerts',           sub:'System notifications & alerts'},
-  settings:    {title:'Settings',         sub:'Dashboard configuration'},
+  dashboard:   { title:'Dashboard',       sub:'Overview of Receivables & Collections' },
+  debtors:     { title:'Debtor View',     sub:'All outstanding client debts' },
+  sd:          { title:'SD View',         sub:'Security Deposits · 31–60 Days' },
+  ld:          { title:'LD View',         sub:'Liquidated Damages · 61–90 Days' },
+  ageing:      { title:'Ageing Analysis', sub:'Stuck debtors by age bucket' },
+  kpi:         { title:'KPI View',        sub:'Key Performance Indicators' },
+  reports:     { title:'Reports',         sub:'Financial reports & exports' },
+  collections: { title:'Collections',     sub:'Collection activities & tracking' },
+  disputes:    { title:'Disputes',        sub:'Client dispute management' },
+  alerts:      { title:'Alerts',          sub:'System notifications & alerts' },
+  settings:    { title:'Settings',        sub:'Dashboard configuration' },
 };
 
 function navTo(page, clickedEl) {
-  // hide all pages
-  document.querySelectorAll('.page-section').forEach(s=>s.style.display='none');
-  // show target page
-  const target = document.getElementById('page-'+page);
-  if(target){ target.style.display=''; target.style.animation='none'; void target.offsetWidth; target.style.animation=''; }
-  // update nav active state
-  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  if(clickedEl) clickedEl.classList.add('active');
-  // update topbar
-  const meta = PAGE_META[page]||{title:page,sub:''};
+  document.querySelectorAll('.page-section').forEach(s => s.style.display = 'none');
+  const target = document.getElementById('page-' + page);
+  if (target) { target.style.display = ''; target.style.animation = 'none'; void target.offsetWidth; target.style.animation = ''; }
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  if (clickedEl) clickedEl.classList.add('active');
+  const meta = PAGE_META[page] || { title: page, sub: '' };
   document.getElementById('topbar-title').textContent = meta.title;
   document.getElementById('topbar-sub').textContent   = meta.sub;
-  // scroll to top
-  document.querySelector('.layout').scrollTo({top:0,behavior:'smooth'});
+  document.querySelector('.layout').scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ── RENDER ──────────────────────────────────────────────────────────────
+// ── GENERIC TABLE BUILDER ────────────────────────────────────────────────
+// Given headers[] and rows[], build a full HTML table
+function buildGenericTable(headers, rows, amtCols) {
+  if (!headers.length) return '<p style="padding:16px;color:var(--text3)">No data</p>';
+  const ths = headers.map(h => `<th>${h}</th>`).join('');
+  const trs = rows.map(row => {
+    const tds = headers.map(h => {
+      const val = row[h] || '';
+      const isAmt = amtCols && amtCols.includes(h);
+      const num = parseFloat(val.replace(/,/g,''));
+      if (isAmt && !isNaN(num) && num !== 0) {
+        return `<td class="td-r">${f(num)}</td>`;
+      }
+      // right-align pure numbers
+      if (!isNaN(num) && val !== '' && !isNaN(parseFloat(val))) {
+        return `<td class="td-r">${fNum(num)}</td>`;
+      }
+      return `<td>${val}</td>`;
+    }).join('');
+    return `<tr>${tds}</tr>`;
+  }).join('');
+  return `<thead><tr>${ths}</tr></thead><tbody>${trs}</tbody>`;
+}
+
+// ── DEBTOR-SPECIFIC ROWS ─────────────────────────────────────────────────
 function debtorRows(debtors, totalDebtors, limit) {
-  return debtors.slice(0,limit).map((r,i)=>{
-    const pct=(r.amt/totalDebtors*100).toFixed(1);
-    const b=r.amt>5000000?'<span class="badge b-red">High</span>':r.amt>2000000?'<span class="badge b-amber">Medium</span>':r.amt>500000?'<span class="badge b-blue">Low</span>':'<span class="badge b-green">Minimal</span>';
-    return`<tr onclick="openDebtorModal(${i})"><td class="rank">${i+1}</td><td><div class="cname">${r.name}</div></td><td class="td-r">${f(r.amt)}</td><td class="td-r">${pct}%</td><td>${b}</td></tr>`;
+  return debtors.slice(0, limit).map((r, i) => {
+    const pct = (r.amt / totalDebtors * 100).toFixed(1);
+    const b = r.amt>5000000 ? '<span class="badge b-red">High</span>'
+            : r.amt>2000000 ? '<span class="badge b-amber">Medium</span>'
+            : r.amt>500000  ? '<span class="badge b-blue">Low</span>'
+            : '<span class="badge b-green">Minimal</span>';
+    return `<tr onclick="openDebtorModal(${i})">
+      <td class="rank">${i+1}</td>
+      <td><div class="cname">${r.name}</div></td>
+      <td class="td-r">${f(r.amt)}</td>
+      <td class="td-r">${pct}%</td>
+      <td>${b}</td>
+    </tr>`;
   }).join('');
 }
 
 function ageingRows(ageing) {
-  const ag=ageing, agT=ag.total;
-  const rows=[
-    {l:'0 – 30 Days',v:ag.d0_30,c:'#2563eb',b:'<span class="badge b-blue">Current</span>'},
-    {l:'30 – 45 Days',v:ag.d30_45,c:'#d97706',b:'<span class="badge b-amber">Watch</span>'},
-    {l:'45 – 60 Days',v:ag.d45_60,c:'#dc2626',b:'<span class="badge b-red">Overdue</span>'},
-    {l:'> 60 Days',v:ag.d60plus,c:'#7c3aed',b:'<span class="badge b-purple">Critical</span>'},
-  ];
-  return rows.map(a=>`<tr><td style="font-weight:600">${a.l}</td><td class="td-r" style="color:${a.c}">${f(a.v)}</td><td class="td-r">${agT>0?(a.v/agT*100).toFixed(1)+'%':'0%'}</td><td>${a.b}</td></tr>`).join('')
-    +`<tr class="total-row"><td>Total Stuck</td><td class="td-r">${f(agT)}</td><td class="td-r">100%</td><td></td></tr>`;
+  const ag = ageing, agT = ag.total;
+  return [
+    { l:'0 – 30 Days',  v:ag.d0_30,   c:'#2563eb', b:'<span class="badge b-blue">Current</span>' },
+    { l:'30 – 45 Days', v:ag.d30_45,  c:'#d97706', b:'<span class="badge b-amber">Watch</span>' },
+    { l:'45 – 60 Days', v:ag.d45_60,  c:'#dc2626', b:'<span class="badge b-red">Overdue</span>' },
+    { l:'> 60 Days',    v:ag.d60plus, c:'#7c3aed', b:'<span class="badge b-purple">Critical</span>' },
+  ].map(a => `<tr><td style="font-weight:600">${a.l}</td><td class="td-r" style="color:${a.c}">${f(a.v)}</td><td class="td-r">${agT>0?(a.v/agT*100).toFixed(1)+'%':'0%'}</td><td>${a.b}</td></tr>`).join('')
+  + `<tr class="total-row"><td>Total Stuck</td><td class="td-r">${f(agT)}</td><td class="td-r">100%</td><td></td></tr>`;
 }
 
 function deductionRows(d) {
-  return[
-    {l:'Security Deposit (SD)',v:d.totalSD,c:'#2563eb'},
-    {l:'Liquidated Damages (LD)',v:d.totalLD,c:'#dc2626'},
-    {l:'Withheld for Commissioning',v:d.totalWithheld,c:'#d97706'},
-    {l:'Other Deductions',v:d.totalOther,c:'#7c3aed'},
-    {l:'Total Deductions',v:d.totalSD+d.totalLD+d.totalWithheld+d.totalOther,c:'#0f2942',bold:true},
-  ].map(r=>`<div class="info-row"><span class="info-row-label" ${r.bold?'style="font-weight:700;color:var(--text)"':''}>${r.l}</span><span class="info-row-val" style="color:${r.c}">${f(r.v)}</span></div>`).join('');
+  return [
+    { l:'Security Deposit (SD)',       v:d.totalSD,       c:'#2563eb' },
+    { l:'Liquidated Damages (LD)',      v:d.totalLD,       c:'#dc2626' },
+    { l:'Withheld for Commissioning',  v:d.totalWithheld, c:'#d97706' },
+    { l:'Other Deductions',            v:d.totalOther,    c:'#7c3aed' },
+    { l:'Total Deductions', v:d.totalSD+d.totalLD+d.totalWithheld+d.totalOther, c:'#0f2942', bold:true },
+  ].map(r => `<div class="info-row">
+    <span class="info-row-label" ${r.bold?'style="font-weight:700;color:var(--text)"':''}}>${r.l}</span>
+    <span class="info-row-val" style="color:${r.c}">${f(r.v)}</span>
+  </div>`).join('');
 }
 
-function render(data){
-  D=data;
-  const{debtors,totalDebtors,totalSD,totalLD,totalWithheld,totalOther,ageing}=data;
+// Inject a generic table into a page section
+function injectTable(sectionId, headers, rows, amtCols, extraInfo) {
+  const sec = document.getElementById(sectionId);
+  if (!sec) return;
+  let tableEl = sec.querySelector('.live-table');
+  if (!tableEl) {
+    tableEl = document.createElement('div');
+    tableEl.className = 'table-card live-table';
+    tableEl.innerHTML = '<div class="table-wrap"><table id="tbl-'+sectionId+'"></table></div>';
+    // insert after sec-hdr
+    const hdr = sec.querySelector('.sec-hdr');
+    if (hdr) hdr.after(tableEl); else sec.appendChild(tableEl);
+  }
+  const tbl = tableEl.querySelector('table');
+  if (tbl) tbl.innerHTML = buildGenericTable(headers, rows, amtCols);
 
-  // KPI cards
-  document.getElementById('m-debtors').textContent=f(totalDebtors);
-  document.getElementById('m-sd').textContent=f(totalSD);
-  document.getElementById('m-ld').textContent=f(totalLD);
-  document.getElementById('m-wh').textContent=f(totalWithheld);
-  document.getElementById('m-od').textContent=f(totalOther);
+  // extra summary badges
+  if (extraInfo) {
+    let infoEl = sec.querySelector('.live-info');
+    if (!infoEl) {
+      infoEl = document.createElement('div');
+      infoEl.className = 'live-info info-card';
+      infoEl.style.marginTop = '16px';
+      sec.appendChild(infoEl);
+    }
+    infoEl.innerHTML = '<div class="info-card-title">Sheet Summary</div>' +
+      extraInfo.map(([l,v]) => `<div class="info-row"><span class="info-row-label">${l}</span><span class="info-row-val" style="font-family:JetBrains Mono,monospace">${v}</span></div>`).join('');
+  }
+}
 
-  // KPI page values
-  const kpiC=document.getElementById('kpi-collections'); if(kpiC) kpiC.textContent=f(5987450);
-  const kpiP=document.getElementById('kpi-ptp'); if(kpiP) kpiP.textContent=f(1245780);
-  const kpiD=document.getElementById('kpi-dispute'); if(kpiD) kpiD.textContent=f(345230);
+// ── RENDER LIVE DATA ─────────────────────────────────────────────────────
+function renderLiveSheet(key, data) {
+  const { headers, rows } = data;
+  if (!headers.length || !rows.length) return;
 
-  // SD / LD badges
-  const sdB=document.getElementById('sd-total-badge'); if(sdB) sdB.textContent=f(totalSD);
-  const ldB=document.getElementById('ld-total-badge'); if(ldB) ldB.textContent=f(totalLD);
+  // Detect amount columns (cols whose values are mostly numeric)
+  const amtCols = headers.filter(h => {
+    const vals = rows.map(r => r[h]).filter(v => v);
+    const numCount = vals.filter(v => !isNaN(parseFloat(v.replace(/,/g,'')))).length;
+    return numCount > vals.length * 0.6 && vals.length > 0;
+  });
 
-  // Debtor count badge
-  const dcB=document.getElementById('debtor-count-badge'); if(dcB) dcB.textContent=debtors.length+' records';
+  const nameKey = findCol(headers, [/name|debtor|client|party|description/i]);
+  const amtKey  = findCol(headers, [/amount|amt|outstanding|balance|receivable|total/i]);
 
-  // Dashboard top-5 debtors
-  const ddT=document.getElementById('dash-debtor-tbody'); if(ddT) ddT.innerHTML=debtorRows(debtors,totalDebtors,5);
-  // Dashboard ageing
-  const daT=document.getElementById('dash-ageing-tbody'); if(daT) daT.innerHTML=ageingRows(ageing);
-  // Dashboard deductions
-  const ddR=document.getElementById('dash-deductions-rows'); if(ddR) ddR.innerHTML=deductionRows(data);
+  switch(key) {
+    case 'gid146': { // Debtors page
+      const debtors = rows
+        .filter(r => r[nameKey] && parseFloat((r[amtKey]||'').replace(/,/g,'')) > 0)
+        .map(r => ({ name: r[nameKey], amt: parseFloat((r[amtKey]||'0').replace(/,/g,'')) }))
+        .sort((a,b) => b.amt - a.amt);
+      if (debtors.length) {
+        D.debtors = debtors;
+        D.totalDebtors = debtors.reduce((s,r) => s+r.amt, 0);
+        // re-render KPI card
+        const el = document.getElementById('m-debtors');
+        if (el) el.textContent = f(D.totalDebtors);
+        // Debtor View page
+        const dvT = document.getElementById('debtor-tbody');
+        if (dvT) dvT.innerHTML = debtorRows(debtors, D.totalDebtors, debtors.length);
+        const dcB = document.getElementById('debtor-count-badge');
+        if (dcB) dcB.textContent = debtors.length + ' records';
+        // Dashboard top 5
+        const ddT = document.getElementById('dash-debtor-tbody');
+        if (ddT) ddT.innerHTML = debtorRows(debtors, D.totalDebtors, 5);
+      }
+      break;
+    }
+    case 'gid1840': // SD View
+      injectTable('page-sd', headers, rows, amtCols, [
+        ['Total Rows', rows.length],
+        ['Columns', headers.join(', ')]
+      ]);
+      break;
+    case 'gid864':  // LD View
+      injectTable('page-ld', headers, rows, amtCols, [
+        ['Total Rows', rows.length],
+        ['Columns', headers.join(', ')]
+      ]);
+      break;
+    case 'gid106':  // Ageing
+      injectTable('page-ageing', headers, rows, amtCols, [
+        ['Total Rows', rows.length],
+        ['Columns', headers.join(', ')]
+      ]);
+      break;
+    case 'gid930':  // Collections
+      injectTable('page-collections', headers, rows, amtCols, null);
+      break;
+    case 'gid965':  // KPI
+      // Try to pull numeric KPI values
+      const numRows = rows.filter(r => Object.values(r).some(v => !isNaN(parseFloat((v||'').replace(/,/g,'')))));
+      injectTable('page-kpi', headers, numRows.length ? numRows : rows, amtCols, null);
+      break;
+    case 'gid647':  // Reports
+      injectTable('page-reports', headers, rows, amtCols, null);
+      break;
+    case 'gid560':  // Disputes
+      injectTable('page-disputes', headers, rows, amtCols, null);
+      break;
+    case 'gid0':    // Sheet1 / default
+      // use for summary totals if possible
+      const sdRow = rows.find(r => Object.values(r).some(v => /security|SD/i.test(v)));
+      const ldRow = rows.find(r => Object.values(r).some(v => /liquidated|LD/i.test(v)));
+      if (sdRow && amtKey) {
+        const sdAmt = parseFloat((sdRow[amtKey]||'').replace(/,/g,''));
+        if (sdAmt > 0) { D.totalSD = sdAmt; const el = document.getElementById('m-sd'); if(el) el.textContent=f(sdAmt); }
+      }
+      if (ldRow && amtKey) {
+        const ldAmt = parseFloat((ldRow[amtKey]||'').replace(/,/g,''));
+        if (ldAmt > 0) { D.totalLD = ldAmt; const el = document.getElementById('m-ld'); if(el) el.textContent=f(ldAmt); }
+      }
+      break;
+  }
+}
 
-  // Debtor View page — all 20
-  const dvT=document.getElementById('debtor-tbody'); if(dvT) dvT.innerHTML=debtorRows(debtors,totalDebtors,20);
+// ── RENDER (initial with fallback data) ──────────────────────────────────
+function render(data) {
+  D = data;
+  const { debtors, totalDebtors, totalSD, totalLD, totalWithheld, totalOther, ageing } = data;
 
-  // SD page
+  document.getElementById('m-debtors').textContent = f(totalDebtors);
+  document.getElementById('m-sd').textContent      = f(totalSD);
+  document.getElementById('m-ld').textContent      = f(totalLD);
+  document.getElementById('m-wh').textContent      = f(totalWithheld);
+  document.getElementById('m-od').textContent      = f(totalOther);
+
+  const kpiC = document.getElementById('kpi-collections'); if(kpiC) kpiC.textContent = f(5987450);
+  const kpiP = document.getElementById('kpi-ptp');         if(kpiP) kpiP.textContent = f(1245780);
+  const kpiD = document.getElementById('kpi-dispute');     if(kpiD) kpiD.textContent = f(345230);
+
+  const sdB = document.getElementById('sd-total-badge'); if(sdB) sdB.textContent = f(totalSD);
+  const ldB = document.getElementById('ld-total-badge'); if(ldB) ldB.textContent = f(totalLD);
+  const dcB = document.getElementById('debtor-count-badge'); if(dcB) dcB.textContent = debtors.length+' records';
+
+  const ddT = document.getElementById('dash-debtor-tbody'); if(ddT) ddT.innerHTML = debtorRows(debtors, totalDebtors, 5);
+  const daT = document.getElementById('dash-ageing-tbody'); if(daT) daT.innerHTML = ageingRows(ageing);
+  const ddR = document.getElementById('dash-deductions-rows'); if(ddR) ddR.innerHTML = deductionRows(data);
+  const dvT = document.getElementById('debtor-tbody');     if(dvT) dvT.innerHTML = debtorRows(debtors, totalDebtors, debtors.length);
+  const agT = document.getElementById('ageing-tbody');     if(agT) agT.innerHTML = ageingRows(ageing);
+
   const sdInvs=[12,9,8,6,5,4,3,4,3,2];
   const sdT=document.getElementById('sd-tbody');
   if(sdT) sdT.innerHTML=debtors.slice(0,10).map((r,i)=>`<tr><td class="rank">${i+1}</td><td><div class="cname">${r.name}</div></td><td class="td-r">${f(r.amt*.198)}</td><td class="td-r">${sdInvs[i]||2}</td><td><span class="badge b-blue">Active</span></td></tr>`).join('')
     +`<tr class="total-row"><td colspan="2">Total</td><td class="td-r">${f(totalSD)}</td><td class="td-r">49</td><td></td></tr>`;
 
-  // LD page
   const ldInvs=[7,6,5,4,3,3,2,2,1,1];
   const ldT=document.getElementById('ld-tbody');
   if(ldT) ldT.innerHTML=debtors.slice(0,10).map((r,i)=>`<tr><td class="rank">${i+1}</td><td><div class="cname">${r.name}</div></td><td class="td-r">${f(r.amt*.301)}</td><td class="td-r">${ldInvs[i]||1}</td><td><span class="badge b-red">Pending</span></td></tr>`).join('')
     +`<tr class="total-row"><td colspan="2">Total</td><td class="td-r">${f(totalLD)}</td><td class="td-r">34</td><td></td></tr>`;
-
-  // Ageing page
-  const agT=document.getElementById('ageing-tbody'); if(agT) agT.innerHTML=ageingRows(ageing);
 }
 
-// ── LOAD DATA ───────────────────────────────────────────────────────────
-async function loadAll(){
-  const btn=document.getElementById('refresh-btn'),icon=document.getElementById('refresh-icon');
-  btn.classList.add('loading');icon.classList.add('spin');
-  try{
-    const resp=await fetch(SHEET_CSV+'&t='+Date.now());
-    if(!resp.ok)throw new Error('HTTP '+resp.status);
-    const lines=(await resp.text()).trim().split('\n');
-    const hdrs=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
-    const rows=lines.slice(1).map(l=>{const v=l.split(',').map(x=>x.trim().replace(/^"|"$/g,''));const o={};hdrs.forEach((h,i)=>o[h]=v[i]||'');return o;});
-    const nk=hdrs.find(k=>/name|debtor|client/i.test(k))||hdrs[0];
-    const ak=hdrs.find(k=>/amount|amt|total|outstanding/i.test(k))||hdrs[1];
-    const debtors=rows.filter(r=>r[nk]&&parseFloat(r[ak])>0).map(r=>({name:r[nk],amt:parseFloat(r[ak])||0})).sort((a,b)=>b.amt-a.amt);
-    if(!debtors.length)throw new Error('No data');
-    render({debtors,totalDebtors:debtors.reduce((s,r)=>s+r.amt,0),totalSD:FB.totalSD,totalLD:FB.totalLD,totalWithheld:FB.totalWithheld,totalOther:FB.totalOther,ageing:FB.ageing});
-    document.getElementById('last-upd').textContent='Live · '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-    document.getElementById('error-banner').classList.remove('show');
-  }catch(e){
-    render({...FB,ageing:FB.ageing});
-    document.getElementById('last-upd').textContent='Local · '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-    const b=document.getElementById('error-banner');
-    b.textContent='⚠ Live data unavailable ('+e.message+'). Showing local data.';b.classList.add('show');
-  }finally{btn.classList.remove('loading');icon.classList.remove('spin');}
+// ── LOAD ALL SHEETS ──────────────────────────────────────────────────────
+async function loadAll() {
+  const btn  = document.getElementById('refresh-btn');
+  const icon = document.getElementById('refresh-icon');
+  btn.classList.add('loading'); icon.classList.add('spin');
+
+  // 1. Show fallback data immediately
+  render({ ...FB, ageing: FB.ageing });
+
+  // 2. Fetch all GIDs in parallel
+  const entries = Object.entries(SHEETS);
+  const results = await Promise.allSettled(
+    entries.map(([key, s]) => fetchSheet(s.gid).then(data => ({ key, ...data })))
+  );
+
+  let liveCount = 0;
+  const failed = [];
+
+  for (const r of results) {
+    if (r.status === 'fulfilled') {
+      liveCount++;
+      LIVE[r.value.key] = r.value;
+      try { renderLiveSheet(r.value.key, r.value); } catch(e) { console.warn('Render error for', r.value.key, e); }
+    } else {
+      failed.push(r.reason?.message || 'unknown');
+    }
+  }
+
+  // Update time + status
+  const now = new Date().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+  if (liveCount > 0) {
+    document.getElementById('last-upd').textContent = 'Live · ' + now + ' (' + liveCount + '/' + entries.length + ' sheets)';
+  } else {
+    document.getElementById('last-upd').textContent = 'Local · ' + now;
+  }
+
+  const banner = document.getElementById('error-banner');
+  if (failed.length > 0 && liveCount === 0) {
+    banner.textContent = '⚠ Could not load any live data. Publish your Google Sheet: File → Share → Publish to web → CSV.';
+    banner.classList.add('show');
+  } else if (failed.length > 0) {
+    banner.textContent = `ℹ ${liveCount} sheets loaded live. ${failed.length} tab(s) unavailable — make sure all tabs are published.`;
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+
+  btn.classList.remove('loading'); icon.classList.remove('spin');
 }
 
-// ── INIT ────────────────────────────────────────────────────────────────
-window.addEventListener('load',()=>{
-  setTimeout(()=>{
+// ── INIT ─────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  setTimeout(() => {
     document.getElementById('splash').classList.add('hide');
-    setTimeout(()=>{
-      document.getElementById('splash').style.display='none';
+    setTimeout(() => {
+      document.getElementById('splash').style.display = 'none';
       document.getElementById('layout').classList.add('revealed');
-    },680);
-  },1800);
+    }, 680);
+  }, 1800);
   loadAll();
 });
 </script>
