@@ -299,6 +299,22 @@ tbody tr:hover { background:var(--bg3); }
 ::-webkit-scrollbar { width:5px; height:5px; }
 ::-webkit-scrollbar-track { background:var(--bg3); }
 ::-webkit-scrollbar-thumb { background:var(--bg4); border-radius:3px; }
+
+/* PAGE SECTIONS */
+.page-section { animation: pageIn .3s ease both; }
+@keyframes pageIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* PLACEHOLDER PAGES */
+.placeholder-page {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:60vh; text-align:center; gap:12px;
+}
+.placeholder-icon { font-size:52px; }
+.placeholder-title { font-size:22px; font-weight:700; color:var(--text); letter-spacing:-.3px; }
+.placeholder-sub { font-size:14px; color:var(--text3); }
+
+/* TOPBAR PAGE TITLE (updates on nav) */
+#topbar-title { transition: opacity .2s; }
 </style>
 </head>
 <body>
@@ -346,49 +362,49 @@ tbody tr:hover { background:var(--bg3); }
   </div>
   <nav class="sidebar-nav">
     <div class="nav-sec">Main</div>
-    <div class="nav-item active">
+    <div class="nav-item active" data-page="dashboard" onclick="navTo('dashboard',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Dashboard
     </div>
-    <div class="nav-item">
+    <div class="nav-item" data-page="debtors" onclick="navTo('debtors',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
       Debtor View
     </div>
-    <div class="nav-item">
+    <div class="nav-item" data-page="sd" onclick="navTo('sd',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
       SD View
     </div>
-    <div class="nav-item">
+    <div class="nav-item" data-page="ld" onclick="navTo('ld',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
       LD View
     </div>
-    <div class="nav-item">
+    <div class="nav-item" data-page="ageing" onclick="navTo('ageing',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       Ageing
     </div>
     <div class="nav-sec" style="margin-top:10px">Analytics</div>
-    <div class="nav-item">
+    <div class="nav-item" data-page="kpi" onclick="navTo('kpi',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6"/><path d="M15 19V9a2 2 0 00-2-2h-2"/><path d="M21 19V5a2 2 0 00-2-2h-2"/></svg>
       KPI View
     </div>
-    <div class="nav-item">
+    <div class="nav-item" data-page="reports" onclick="navTo('reports',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       Reports
     </div>
-    <div class="nav-item">
+    <div class="nav-item" data-page="collections" onclick="navTo('collections',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg>
       Collections
     </div>
-    <div class="nav-item">
+    <div class="nav-item" data-page="disputes" onclick="navTo('disputes',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       Disputes
     </div>
     <div class="nav-sec" style="margin-top:10px">System</div>
-    <div class="nav-item">
+    <div class="nav-item" data-page="alerts" onclick="navTo('alerts',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
       Alerts
     </div>
-    <div class="nav-item">
+    <div class="nav-item" data-page="settings" onclick="navTo('settings',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 016 17M4.93 19.07A10 10 0 0118 7"/></svg>
       Settings
     </div>
@@ -408,8 +424,8 @@ tbody tr:hover { background:var(--bg3); }
 <div class="layout" id="layout">
   <header class="topbar">
     <div class="topbar-left">
-      <h1>Dashboard</h1>
-      <p>Overview of Receivables &amp; Collections</p>
+      <h1 id="topbar-title">Dashboard</h1>
+      <p id="topbar-sub">Overview of Receivables &amp; Collections</p>
     </div>
     <div class="topbar-right">
       <div class="live-pill"><div class="live-dot"></div>Live</div>
@@ -428,101 +444,169 @@ tbody tr:hover { background:var(--bg3); }
   <div class="page-body">
     <div id="error-banner" class="error-banner"></div>
 
-    <!-- 5 KPI CARDS -->
-    <div class="metrics">
-      <div class="metric-card mc-teal" onclick="openMetricModal('debtors')">
-        <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <div class="m-label">Total Debtors</div>
-        <div class="m-value" id="m-debtors">—</div>
-        <div class="m-sub">Outstanding receivables</div>
-        <div class="m-trend t-up">↑ 8.45%</div>
+    <!-- ══ PAGE: DASHBOARD ══ -->
+    <section id="page-dashboard" class="page-section">
+      <div class="metrics">
+        <div class="metric-card mc-teal" onclick="openMetricModal('debtors')">
+          <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <div class="m-label">Total Debtors</div>
+          <div class="m-value" id="m-debtors">—</div>
+          <div class="m-sub">Outstanding receivables</div>
+          <div class="m-trend t-up">↑ 8.45%</div>
+        </div>
+        <div class="metric-card mc-blue" onclick="openMetricModal('sd')">
+          <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+          <div class="m-label">Security Deposit</div>
+          <div class="m-value" id="m-sd">—</div>
+          <div class="m-sub">Held by clients</div>
+          <div class="m-trend t-up">↑ 6.12%</div>
+        </div>
+        <div class="metric-card mc-red" onclick="openMetricModal('ld')">
+          <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <div class="m-label">LD Amount</div>
+          <div class="m-value" id="m-ld">—</div>
+          <div class="m-sub">Liquidated damages</div>
+          <div class="m-trend t-down">↓ 3.21%</div>
+        </div>
+        <div class="metric-card mc-amber" onclick="openMetricModal('wh')">
+          <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="m-label">Withheld</div>
+          <div class="m-value" id="m-wh">—</div>
+          <div class="m-sub">Commissioning work</div>
+          <div class="m-trend t-up">↑ 4.32%</div>
+        </div>
+        <div class="metric-card mc-purple" onclick="openMetricModal('od')">
+          <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg></div>
+          <div class="m-label">Other Deductions</div>
+          <div class="m-value" id="m-od">—</div>
+          <div class="m-sub">Miscellaneous</div>
+          <div class="m-trend t-down">↓ 1.05%</div>
+        </div>
       </div>
-      <div class="metric-card mc-blue" onclick="openMetricModal('sd')">
-        <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
-        <div class="m-label">Security Deposit</div>
-        <div class="m-value" id="m-sd">—</div>
-        <div class="m-sub">Held by clients</div>
-        <div class="m-trend t-up">↑ 6.12%</div>
+      <div class="sec-hdr">
+        <div class="sec-hdr-title">Top Debtors <span>· Quick overview</span></div>
+        <button class="view-all" onclick="navTo('debtors',document.querySelector('[data-page=debtors]'))">View All →</button>
       </div>
-      <div class="metric-card mc-red" onclick="openMetricModal('ld')">
-        <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-        <div class="m-label">LD Amount</div>
-        <div class="m-value" id="m-ld">—</div>
-        <div class="m-sub">Liquidated damages</div>
-        <div class="m-trend t-down">↓ 3.21%</div>
-      </div>
-      <div class="metric-card mc-amber" onclick="openMetricModal('wh')">
-        <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-        <div class="m-label">Withheld</div>
-        <div class="m-value" id="m-wh">—</div>
-        <div class="m-sub">Commissioning work</div>
-        <div class="m-trend t-up">↑ 4.32%</div>
-      </div>
-      <div class="metric-card mc-purple" onclick="openMetricModal('od')">
-        <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg></div>
-        <div class="m-label">Other Deductions</div>
-        <div class="m-value" id="m-od">—</div>
-        <div class="m-sub">Miscellaneous</div>
-        <div class="m-trend t-down">↓ 1.05%</div>
-      </div>
-    </div>
-
-    <!-- DEBTOR TABLE -->
-    <div class="sec-hdr">
-      <div class="sec-hdr-title">Debtor View <span>· Top 20 clients</span></div>
-      <button class="view-all">View All →</button>
-    </div>
-    <div class="table-card">
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Debtor Name</th><th style="text-align:right">Outstanding (INR)</th><th style="text-align:right">% of Total</th><th>Risk Level</th></tr></thead>
-          <tbody id="debtor-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- SD + LD TABLES -->
-    <div class="sec-hdr" style="margin-top:1.75rem">
-      <div class="sec-hdr-title">SD View <span>· 31–60 Days</span></div>
-      <button class="view-all">View All →</button>
-    </div>
-    <div class="two-col">
       <div class="table-card">
         <div class="table-wrap">
           <table>
-            <thead><tr><th>#</th><th>Debtor Name</th><th style="text-align:right">SD Balance</th><th style="text-align:right">Invoices</th></tr></thead>
+            <thead><tr><th>#</th><th>Debtor Name</th><th style="text-align:right">Outstanding (INR)</th><th style="text-align:right">% of Total</th><th>Risk Level</th></tr></thead>
+            <tbody id="dash-debtor-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="sec-hdr" style="margin-top:1.5rem">
+        <div class="sec-hdr-title">Ageing Summary <span>· Stuck debtors</span></div>
+      </div>
+      <div class="two-col">
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Bucket</th><th style="text-align:right">Amount</th><th style="text-align:right">% Share</th><th>Status</th></tr></thead>
+              <tbody id="dash-ageing-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">Deductions &amp; Holdbacks Summary</div>
+          <div id="dash-deductions-rows"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ PAGE: DEBTOR VIEW ══ -->
+    <section id="page-debtors" class="page-section" style="display:none">
+      <div class="sec-hdr">
+        <div class="sec-hdr-title">Debtor View <span>· All outstanding debtors</span></div>
+        <span class="badge b-teal" id="debtor-count-badge" style="font-size:12px;padding:4px 12px;border-radius:999px;background:var(--teal-bg);color:var(--teal);border:1px solid rgba(13,148,136,.2);">20 records</span>
+      </div>
+      <div class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Debtor Name</th><th style="text-align:right">Outstanding (INR)</th><th style="text-align:right">% of Total</th><th>Risk Level</th></tr></thead>
+            <tbody id="debtor-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ PAGE: SD VIEW ══ -->
+    <section id="page-sd" class="page-section" style="display:none">
+      <div class="sec-hdr">
+        <div class="sec-hdr-title">SD View <span>· Security Deposits (31–60 Days)</span></div>
+        <span style="font-size:12px;font-weight:600;color:var(--blue)">Total: <span id="sd-total-badge">—</span></span>
+      </div>
+      <div class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Debtor Name</th><th style="text-align:right">SD Balance (INR)</th><th style="text-align:right">Invoices</th><th>Status</th></tr></thead>
             <tbody id="sd-tbody"></tbody>
           </table>
         </div>
       </div>
+    </section>
+
+    <!-- ══ PAGE: LD VIEW ══ -->
+    <section id="page-ld" class="page-section" style="display:none">
+      <div class="sec-hdr">
+        <div class="sec-hdr-title">LD View <span>· Liquidated Damages (61–90 Days)</span></div>
+        <span style="font-size:12px;font-weight:600;color:var(--red)">Total: <span id="ld-total-badge">—</span></span>
+      </div>
       <div class="table-card">
         <div class="table-wrap">
           <table>
-            <thead><tr><th>#</th><th>Debtor Name</th><th style="text-align:right">LD Balance</th><th style="text-align:right">Invoices</th></tr></thead>
+            <thead><tr><th>#</th><th>Debtor Name</th><th style="text-align:right">LD Balance (INR)</th><th style="text-align:right">Invoices</th><th>Status</th></tr></thead>
             <tbody id="ld-tbody"></tbody>
           </table>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- AGEING + DEDUCTIONS -->
-    <div class="sec-hdr">
-      <div class="sec-hdr-title">Ageing Analysis <span>· Stuck Debtors</span></div>
-    </div>
-    <div class="two-col">
+    <!-- ══ PAGE: AGEING ══ -->
+    <section id="page-ageing" class="page-section" style="display:none">
+      <div class="sec-hdr">
+        <div class="sec-hdr-title">Ageing Analysis <span>· Stuck Debtors Breakdown</span></div>
+      </div>
       <div class="table-card">
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Bucket</th><th style="text-align:right">Amount</th><th style="text-align:right">% Share</th><th>Status</th></tr></thead>
+            <thead><tr><th>Ageing Bucket</th><th style="text-align:right">Amount (INR)</th><th style="text-align:right">% Share</th><th>Risk Status</th></tr></thead>
             <tbody id="ageing-tbody"></tbody>
           </table>
         </div>
       </div>
-      <div class="info-card">
-        <div class="info-card-title">Deductions &amp; Holdbacks Summary</div>
-        <div id="deductions-rows"></div>
+    </section>
+
+    <!-- ══ PAGE: KPI VIEW ══ -->
+    <section id="page-kpi" class="page-section" style="display:none">
+      <div class="sec-hdr"><div class="sec-hdr-title">KPI View <span>· Key Performance Indicators</span></div></div>
+      <div class="metrics" style="grid-template-columns:repeat(3,1fr)">
+        <div class="metric-card mc-teal"><div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6"/><path d="M15 19V9a2 2 0 00-2-2h-2"/><path d="M21 19V5a2 2 0 00-2-2h-2"/></svg></div><div class="m-label">DSO (Days)</div><div class="m-value">46.35</div><div class="m-sub">Days Sales Outstanding</div><div class="m-trend t-down">↓ 3.25%</div></div>
+        <div class="metric-card mc-blue"><div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg></div><div class="m-label">Collections This Month</div><div class="m-value" id="kpi-collections">—</div><div class="m-sub">Total collected (INR)</div><div class="m-trend t-up">↑ 9.12%</div></div>
+        <div class="metric-card mc-red"><div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="m-label">Bad Debt %</div><div class="m-value">1.25%</div><div class="m-sub">Of total receivables</div><div class="m-trend t-down">↓ 0.15%</div></div>
+        <div class="metric-card mc-amber"><div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="m-label">Promise to Pay</div><div class="m-value" id="kpi-ptp">—</div><div class="m-sub">Committed by clients</div><div class="m-trend t-up">↑ 6.72%</div></div>
+        <div class="metric-card mc-purple"><div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="m-label">Dispute Amount</div><div class="m-value" id="kpi-dispute">—</div><div class="m-sub">Under resolution</div><div class="m-trend t-down">↓ 2.35%</div></div>
+        <div class="metric-card mc-teal"><div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="m-label">Collection Efficiency</div><div class="m-value">92.35%</div><div class="m-sub">vs target 90%</div><div class="m-trend t-up">↑ 2.15%</div></div>
       </div>
-    </div>
+    </section>
+
+    <!-- ══ PAGE: PLACEHOLDER PAGES ══ -->
+    <section id="page-reports" class="page-section placeholder-page" style="display:none">
+      <div class="placeholder-icon">📄</div><div class="placeholder-title">Reports</div><div class="placeholder-sub">Generate and download financial reports</div>
+    </section>
+    <section id="page-collections" class="page-section placeholder-page" style="display:none">
+      <div class="placeholder-icon">💰</div><div class="placeholder-title">Collections</div><div class="placeholder-sub">Track and manage collection activities</div>
+    </section>
+    <section id="page-disputes" class="page-section placeholder-page" style="display:none">
+      <div class="placeholder-icon">⚖️</div><div class="placeholder-title">Disputes</div><div class="placeholder-sub">Manage and resolve client disputes</div>
+    </section>
+    <section id="page-alerts" class="page-section placeholder-page" style="display:none">
+      <div class="placeholder-icon">🔔</div><div class="placeholder-title">Alerts</div><div class="placeholder-sub">Configure and review system alerts</div>
+    </section>
+    <section id="page-settings" class="page-section placeholder-page" style="display:none">
+      <div class="placeholder-icon">⚙️</div><div class="placeholder-title">Settings</div><div class="placeholder-sub">Configure your CRM preferences</div>
+    </section>
+
   </div>
 </div>
 
@@ -559,8 +643,13 @@ const FB={
   totalLD:15857083.46, totalWithheld:7252267.84, totalOther:1259114.64,
   ageing:{d0_30:1320354.79,d30_45:0,d45_60:15127185.19,d60plus:2692788.22,total:19140328.20}
 };
+
 let D=null;
+
+// ── FORMAT ──────────────────────────────────────────────────────────────
 const f=n=>{n=parseFloat(n)||0;if(n>=10000000)return'₹'+(n/10000000).toFixed(2)+' Cr';if(n>=100000)return'₹'+(n/100000).toFixed(2)+' L';return'₹'+n.toLocaleString('en-IN',{maximumFractionDigits:0});};
+
+// ── MODAL ───────────────────────────────────────────────────────────────
 const openModal=id=>document.getElementById(id).classList.add('open');
 const closeModal=id=>document.getElementById(id).classList.remove('open');
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal('metric-modal');closeModal('debtor-modal');}});
@@ -579,14 +668,21 @@ function openMetricModal(key){
   document.getElementById('mm-body').innerHTML=cfg.rows.map(([l,v])=>`<div class="modal-row"><span class="modal-row-label">${l}</span><span class="modal-row-val" style="color:${cfg.color}">${typeof v==='number'?f(v):v}</span></div>`).join('');
   openModal('metric-modal');
 }
+
 function openDebtorModal(i){
   if(!D)return;
   const r=D.debtors[i],pct=(r.amt/D.totalDebtors*100).toFixed(1);
   const [rl,rc]=r.amt>5000000?['High','#dc2626']:r.amt>2000000?['Medium','#d97706']:r.amt>500000?['Low','#2563eb']:['Minimal','#16a34a'];
   document.getElementById('dm-title').textContent=`#${i+1} · ${r.name}`;
-  document.getElementById('dm-body').innerHTML=[['Outstanding',f(r.amt),'#0d9488'],['Share of Debtors',pct+'%','#2563eb'],['Risk Level',rl,rc],['Rank',`#${i+1} of ${D.debtors.length}`,'#4a5568']].map(([l,v,c])=>`<div class="modal-row"><span class="modal-row-label">${l}</span><span class="modal-row-val" style="color:${c}">${v}</span></div>`).join('');
+  document.getElementById('dm-body').innerHTML=[
+    ['Outstanding',f(r.amt),'#0d9488'],
+    ['Share of Debtors',pct+'%','#2563eb'],
+    ['Risk Level',rl,rc],
+    ['Rank',`#${i+1} of ${D.debtors.length}`,'#4a5568']
+  ].map(([l,v,c])=>`<div class="modal-row"><span class="modal-row-label">${l}</span><span class="modal-row-val" style="color:${c}">${v}</span></div>`).join('');
   openModal('debtor-modal');
 }
+
 function openSummaryModal(){
   if(!D)return;
   const tot=D.totalDebtors+D.totalSD+D.totalLD+D.totalWithheld+D.totalOther;
@@ -602,51 +698,119 @@ function openSummaryModal(){
   openModal('metric-modal');
 }
 
+// ── NAVIGATION ──────────────────────────────────────────────────────────
+const PAGE_META = {
+  dashboard:   {title:'Dashboard',        sub:'Overview of Receivables & Collections'},
+  debtors:     {title:'Debtor View',      sub:'All outstanding client debts'},
+  sd:          {title:'SD View',          sub:'Security Deposits · 31–60 Days'},
+  ld:          {title:'LD View',          sub:'Liquidated Damages · 61–90 Days'},
+  ageing:      {title:'Ageing Analysis',  sub:'Stuck debtors by age bucket'},
+  kpi:         {title:'KPI View',         sub:'Key Performance Indicators'},
+  reports:     {title:'Reports',          sub:'Financial reports & exports'},
+  collections: {title:'Collections',      sub:'Collection activities & tracking'},
+  disputes:    {title:'Disputes',         sub:'Client dispute management'},
+  alerts:      {title:'Alerts',           sub:'System notifications & alerts'},
+  settings:    {title:'Settings',         sub:'Dashboard configuration'},
+};
+
+function navTo(page, clickedEl) {
+  // hide all pages
+  document.querySelectorAll('.page-section').forEach(s=>s.style.display='none');
+  // show target page
+  const target = document.getElementById('page-'+page);
+  if(target){ target.style.display=''; target.style.animation='none'; void target.offsetWidth; target.style.animation=''; }
+  // update nav active state
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  if(clickedEl) clickedEl.classList.add('active');
+  // update topbar
+  const meta = PAGE_META[page]||{title:page,sub:''};
+  document.getElementById('topbar-title').textContent = meta.title;
+  document.getElementById('topbar-sub').textContent   = meta.sub;
+  // scroll to top
+  document.querySelector('.layout').scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── RENDER ──────────────────────────────────────────────────────────────
+function debtorRows(debtors, totalDebtors, limit) {
+  return debtors.slice(0,limit).map((r,i)=>{
+    const pct=(r.amt/totalDebtors*100).toFixed(1);
+    const b=r.amt>5000000?'<span class="badge b-red">High</span>':r.amt>2000000?'<span class="badge b-amber">Medium</span>':r.amt>500000?'<span class="badge b-blue">Low</span>':'<span class="badge b-green">Minimal</span>';
+    return`<tr onclick="openDebtorModal(${i})"><td class="rank">${i+1}</td><td><div class="cname">${r.name}</div></td><td class="td-r">${f(r.amt)}</td><td class="td-r">${pct}%</td><td>${b}</td></tr>`;
+  }).join('');
+}
+
+function ageingRows(ageing) {
+  const ag=ageing, agT=ag.total;
+  const rows=[
+    {l:'0 – 30 Days',v:ag.d0_30,c:'#2563eb',b:'<span class="badge b-blue">Current</span>'},
+    {l:'30 – 45 Days',v:ag.d30_45,c:'#d97706',b:'<span class="badge b-amber">Watch</span>'},
+    {l:'45 – 60 Days',v:ag.d45_60,c:'#dc2626',b:'<span class="badge b-red">Overdue</span>'},
+    {l:'> 60 Days',v:ag.d60plus,c:'#7c3aed',b:'<span class="badge b-purple">Critical</span>'},
+  ];
+  return rows.map(a=>`<tr><td style="font-weight:600">${a.l}</td><td class="td-r" style="color:${a.c}">${f(a.v)}</td><td class="td-r">${agT>0?(a.v/agT*100).toFixed(1)+'%':'0%'}</td><td>${a.b}</td></tr>`).join('')
+    +`<tr class="total-row"><td>Total Stuck</td><td class="td-r">${f(agT)}</td><td class="td-r">100%</td><td></td></tr>`;
+}
+
+function deductionRows(d) {
+  return[
+    {l:'Security Deposit (SD)',v:d.totalSD,c:'#2563eb'},
+    {l:'Liquidated Damages (LD)',v:d.totalLD,c:'#dc2626'},
+    {l:'Withheld for Commissioning',v:d.totalWithheld,c:'#d97706'},
+    {l:'Other Deductions',v:d.totalOther,c:'#7c3aed'},
+    {l:'Total Deductions',v:d.totalSD+d.totalLD+d.totalWithheld+d.totalOther,c:'#0f2942',bold:true},
+  ].map(r=>`<div class="info-row"><span class="info-row-label" ${r.bold?'style="font-weight:700;color:var(--text)"':''}>${r.l}</span><span class="info-row-val" style="color:${r.c}">${f(r.v)}</span></div>`).join('');
+}
+
 function render(data){
   D=data;
   const{debtors,totalDebtors,totalSD,totalLD,totalWithheld,totalOther,ageing}=data;
 
+  // KPI cards
   document.getElementById('m-debtors').textContent=f(totalDebtors);
   document.getElementById('m-sd').textContent=f(totalSD);
   document.getElementById('m-ld').textContent=f(totalLD);
   document.getElementById('m-wh').textContent=f(totalWithheld);
   document.getElementById('m-od').textContent=f(totalOther);
 
-  // Debtor table
-  document.getElementById('debtor-tbody').innerHTML=debtors.slice(0,20).map((r,i)=>{
-    const pct=(r.amt/totalDebtors*100).toFixed(1);
-    const b=r.amt>5000000?'<span class="badge b-red">High</span>':r.amt>2000000?'<span class="badge b-amber">Medium</span>':r.amt>500000?'<span class="badge b-blue">Low</span>':'<span class="badge b-green">Minimal</span>';
-    return`<tr onclick="openDebtorModal(${i})"><td class="rank">${i+1}</td><td><div class="cname">${r.name}</div></td><td class="td-r">${f(r.amt)}</td><td class="td-r">${pct}%</td><td>${b}</td></tr>`;
-  }).join('');
+  // KPI page values
+  const kpiC=document.getElementById('kpi-collections'); if(kpiC) kpiC.textContent=f(5987450);
+  const kpiP=document.getElementById('kpi-ptp'); if(kpiP) kpiP.textContent=f(1245780);
+  const kpiD=document.getElementById('kpi-dispute'); if(kpiD) kpiD.textContent=f(345230);
 
-  // SD table
-  const sdInvs=[12,9,8,6,5];
-  document.getElementById('sd-tbody').innerHTML=debtors.slice(0,5).map((r,i)=>`<tr><td class="rank">${i+1}</td><td><div class="cname">${r.name}</div></td><td class="td-r">${f(r.amt*.198)}</td><td class="td-r">${sdInvs[i]}</td></tr>`).join('')+`<tr class="total-row"><td></td><td>Total</td><td class="td-r">${f(totalSD)}</td><td class="td-r">40</td></tr>`;
+  // SD / LD badges
+  const sdB=document.getElementById('sd-total-badge'); if(sdB) sdB.textContent=f(totalSD);
+  const ldB=document.getElementById('ld-total-badge'); if(ldB) ldB.textContent=f(totalLD);
 
-  // LD table
-  const ldInvs=[7,6,5,4,3];
-  document.getElementById('ld-tbody').innerHTML=debtors.slice(0,5).map((r,i)=>`<tr><td class="rank">${i+1}</td><td><div class="cname">${r.name}</div></td><td class="td-r">${f(r.amt*.301)}</td><td class="td-r">${ldInvs[i]}</td></tr>`).join('')+`<tr class="total-row"><td></td><td>Total</td><td class="td-r">${f(totalLD)}</td><td class="td-r">25</td></tr>`;
+  // Debtor count badge
+  const dcB=document.getElementById('debtor-count-badge'); if(dcB) dcB.textContent=debtors.length+' records';
 
-  // Ageing table
-  const ag=ageing, agT=ag.total;
-  const ageRows=[
-    {l:'0 – 30 Days',v:ag.d0_30,c:'#2563eb',b:'<span class="badge b-blue">Current</span>'},
-    {l:'30 – 45 Days',v:ag.d30_45,c:'#d97706',b:'<span class="badge b-amber">Watch</span>'},
-    {l:'45 – 60 Days',v:ag.d45_60,c:'#dc2626',b:'<span class="badge b-red">Overdue</span>'},
-    {l:'> 60 Days',v:ag.d60plus,c:'#7c3aed',b:'<span class="badge b-purple">Critical</span>'},
-  ];
-  document.getElementById('ageing-tbody').innerHTML=ageRows.map(a=>`<tr><td style="font-weight:600">${a.l}</td><td class="td-r" style="color:${a.c}">${f(a.v)}</td><td class="td-r">${agT>0?(a.v/agT*100).toFixed(1)+'%':'0%'}</td><td>${a.b}</td></tr>`).join('')+`<tr class="total-row"><td>Total Stuck</td><td class="td-r">${f(agT)}</td><td class="td-r">100%</td><td></td></tr>`;
+  // Dashboard top-5 debtors
+  const ddT=document.getElementById('dash-debtor-tbody'); if(ddT) ddT.innerHTML=debtorRows(debtors,totalDebtors,5);
+  // Dashboard ageing
+  const daT=document.getElementById('dash-ageing-tbody'); if(daT) daT.innerHTML=ageingRows(ageing);
+  // Dashboard deductions
+  const ddR=document.getElementById('dash-deductions-rows'); if(ddR) ddR.innerHTML=deductionRows(data);
 
-  // Deductions
-  document.getElementById('deductions-rows').innerHTML=[
-    {l:'Security Deposit (SD)',v:totalSD,c:'#2563eb'},
-    {l:'Liquidated Damages (LD)',v:totalLD,c:'#dc2626'},
-    {l:'Withheld for Commissioning',v:totalWithheld,c:'#d97706'},
-    {l:'Other Deductions',v:totalOther,c:'#7c3aed'},
-    {l:'Total Deductions',v:totalSD+totalLD+totalWithheld+totalOther,c:'#0f2942',bold:true},
-  ].map(r=>`<div class="info-row"><span class="info-row-label" ${r.bold?'style="font-weight:700;color:var(--text)"':''}>${r.l}</span><span class="info-row-val" style="color:${r.c}">${f(r.v)}</span></div>`).join('');
+  // Debtor View page — all 20
+  const dvT=document.getElementById('debtor-tbody'); if(dvT) dvT.innerHTML=debtorRows(debtors,totalDebtors,20);
+
+  // SD page
+  const sdInvs=[12,9,8,6,5,4,3,4,3,2];
+  const sdT=document.getElementById('sd-tbody');
+  if(sdT) sdT.innerHTML=debtors.slice(0,10).map((r,i)=>`<tr><td class="rank">${i+1}</td><td><div class="cname">${r.name}</div></td><td class="td-r">${f(r.amt*.198)}</td><td class="td-r">${sdInvs[i]||2}</td><td><span class="badge b-blue">Active</span></td></tr>`).join('')
+    +`<tr class="total-row"><td colspan="2">Total</td><td class="td-r">${f(totalSD)}</td><td class="td-r">49</td><td></td></tr>`;
+
+  // LD page
+  const ldInvs=[7,6,5,4,3,3,2,2,1,1];
+  const ldT=document.getElementById('ld-tbody');
+  if(ldT) ldT.innerHTML=debtors.slice(0,10).map((r,i)=>`<tr><td class="rank">${i+1}</td><td><div class="cname">${r.name}</div></td><td class="td-r">${f(r.amt*.301)}</td><td class="td-r">${ldInvs[i]||1}</td><td><span class="badge b-red">Pending</span></td></tr>`).join('')
+    +`<tr class="total-row"><td colspan="2">Total</td><td class="td-r">${f(totalLD)}</td><td class="td-r">34</td><td></td></tr>`;
+
+  // Ageing page
+  const agT=document.getElementById('ageing-tbody'); if(agT) agT.innerHTML=ageingRows(ageing);
 }
 
+// ── LOAD DATA ───────────────────────────────────────────────────────────
 async function loadAll(){
   const btn=document.getElementById('refresh-btn'),icon=document.getElementById('refresh-icon');
   btn.classList.add('loading');icon.classList.add('spin');
@@ -671,10 +835,14 @@ async function loadAll(){
   }finally{btn.classList.remove('loading');icon.classList.remove('spin');}
 }
 
+// ── INIT ────────────────────────────────────────────────────────────────
 window.addEventListener('load',()=>{
   setTimeout(()=>{
     document.getElementById('splash').classList.add('hide');
-    setTimeout(()=>{document.getElementById('splash').style.display='none';document.getElementById('layout').classList.add('revealed');},680);
+    setTimeout(()=>{
+      document.getElementById('splash').style.display='none';
+      document.getElementById('layout').classList.add('revealed');
+    },680);
   },1800);
   loadAll();
 });
